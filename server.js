@@ -18,14 +18,31 @@ const PORT = process.env.STRATEGY_PORT || 8081;
 // CONFIGURATION
 // ===============================================================================
 
-// RPC ENDPOINTS (Configured for robust FallbackProvider)
-const RPC_URLS = [
+// Check for a dedicated, stable RPC URL via environment variable (Recommended for stability)
+// You would set this variable in your deployment environment, e.g.,
+// ETHERSCAN_API_KEY=YourEtherscanKeyHere
+// ETHERSCAN_RPC_URL=https://mainnet.eth.blockscan.com/rpc/{YourEtherscanKey}
+
+const ETHERSCAN_RPC_URL = process.env.ETHERSCAN_RPC_URL;
+
+// RPC ENDPOINTS (The secure URL is prioritized if available)
+let RPC_URLS = [
+    // Standard Public Endpoints (used as fallbacks)
     'https://ethereum-rpc.publicnode.com',
-    'https://eth.drpc.org',
-    'https://rpc.ankr.com/eth',
+    'https://cloudflare-eth.com',
+    'https://eth.meowrpc.com',     
     'https://eth.llamarpc.com',
     'https://1rpc.io/eth'
 ];
+
+if (ETHERSCAN_RPC_URL) {
+    // If a stable, dedicated URL is provided, put it first for the FallbackProvider to prefer it.
+    RPC_URLS.unshift(ETHERSCAN_RPC_URL);
+    console.log("✅ Using secure RPC URL from environment variable for primary connection.");
+} else {
+    console.log("⚠️ Secure RPC URL not found. Relying solely on public endpoints.");
+}
+
 
 // Simulated Critical Liquidity Pools to Monitor
 const LIQUIDITY_POOLS = [
@@ -46,7 +63,7 @@ let lastMonitorRun = null;
 async function initProvider() {
     monitorStatus = 'connecting';
     try {
-        // FIX: Explicitly use 'mainnet' instead of chainId '1' for improved network detection stability
+        // Explicitly use 'mainnet' for improved network detection stability
         const providers = RPC_URLS.map(url => new ethers.JsonRpcProvider(url, 'mainnet'));
         
         // Use FallbackProvider for robustness and automatic failover
