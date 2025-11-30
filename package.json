@@ -1,0 +1,14 @@
+{
+  "name": "high-frequency-earnings-api",
+  "version": "1.0.0",
+  "description": "API backend for simulating ultra-high-frequency trading, aggregating real ETH profits, and managing withdrawals.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "ethers": "^6.13.1",
+    "express": "^4.19.2"
+  }
+}
