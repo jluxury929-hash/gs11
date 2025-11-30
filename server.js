@@ -2,26 +2,25 @@
 // STRATEGY ENGINE API v1.0 (LIQUIDITY POOL MONITORING)
 // This service simulates monitoring critical on-chain liquidity pools and uses 
 // a FallbackProvider for robust, fault-tolerant RPC connections.
+// FIX: Imports FallbackProvider and StaticJsonRpcProvider directly from ethers v6 
+// for improved stability and reduced connection log spam from public nodes.
 // ===============================================================================
 
 const express = require('express');
 const cors = require('cors');
-const { ethers } = require('ethers');
+// Import all necessary classes from ethers v6
+const { ethers, FallbackProvider, StaticJsonRpcProvider } = require('ethers');
 
 const app = express();
 app.use(cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'] }));
 app.use(express.json());
 
+// Using a specific port for the Strategy Engine
 const PORT = process.env.STRATEGY_PORT || 8081;
 
 // ===============================================================================
 // CONFIGURATION
 // ===============================================================================
-
-// Check for a dedicated, stable RPC URL via environment variable (Recommended for stability)
-// You would set this variable in your deployment environment, e.g.,
-// ETHERSCAN_API_KEY=YourEtherscanKeyHere
-// ETHERSCAN_RPC_URL=https://mainnet.eth.blockscan.com/rpc/{YourEtherscanKey}
 
 const ETHERSCAN_RPC_URL = process.env.ETHERSCAN_RPC_URL;
 
@@ -30,13 +29,12 @@ let RPC_URLS = [
     // Standard Public Endpoints (used as fallbacks)
     'https://ethereum-rpc.publicnode.com',
     'https://cloudflare-eth.com',
-    'https://eth.meowrpc.com',     
+    'https://eth.meowrpc.com',      
     'https://eth.llamarpc.com',
     'https://1rpc.io/eth'
 ];
 
 if (ETHERSCAN_RPC_URL) {
-    // If a stable, dedicated URL is provided, put it first for the FallbackProvider to prefer it.
     RPC_URLS.unshift(ETHERSCAN_RPC_URL);
     console.log("✅ Using secure RPC URL from environment variable for primary connection.");
 } else {
@@ -57,17 +55,17 @@ let monitorStatus = 'initializing';
 let lastMonitorRun = null;
 
 // ===============================================================================
-// PROVIDER INITIALIZATION WITH FALLBACK (The requested robust implementation)
+// PROVIDER INITIALIZATION WITH FALLBACK
 // ===============================================================================
 
 async function initProvider() {
     monitorStatus = 'connecting';
     try {
-        // Explicitly use 'mainnet' for improved network detection stability
-        const providers = RPC_URLS.map(url => new ethers.JsonRpcProvider(url, 'mainnet'));
+        // Use StaticJsonRpcProvider to ensure stability and silence unnecessary connection errors 
+        const providers = RPC_URLS.map(url => new StaticJsonRpcProvider(url, 'mainnet'));
         
         // Use FallbackProvider for robustness and automatic failover
-        const fallbackProvider = new ethers.FallbackProvider(providers, 1);
+        const fallbackProvider = new FallbackProvider(providers, 1);
         
         const blockNum = await fallbackProvider.getBlockNumber();
         console.log(`✅ Strategy Engine: Connected to Ethereum Mainnet at block: ${blockNum} using FallbackProvider.`);
@@ -132,7 +130,7 @@ async function monitorLiquidityPools() {
 function startAutoMonitor() {
     console.log(`⏱️ Strategy Engine: Starting auto-monitor. Running every 10 seconds...`);
     // Run monitoring every 10 seconds
-    setInterval(monitorLiquidityPools, 10000); 
+    setInterval(monitorLiquidityPools, 10000);  
     monitorLiquidityPools();
 }
 
