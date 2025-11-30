@@ -46,8 +46,8 @@ let lastMonitorRun = null;
 async function initProvider() {
     monitorStatus = 'connecting';
     try {
-        // Create an array of providers from the URLs
-        const providers = RPC_URLS.map(url => new ethers.JsonRpcProvider(url, 1));
+        // FIX: Explicitly use 'mainnet' instead of chainId '1' for improved network detection stability
+        const providers = RPC_URLS.map(url => new ethers.JsonRpcProvider(url, 'mainnet'));
         
         // Use FallbackProvider for robustness and automatic failover
         const fallbackProvider = new ethers.FallbackProvider(providers, 1);
