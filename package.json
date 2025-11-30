@@ -1,14 +1,18 @@
 {
-  "name": "high-frequency-earnings-api",
+  "name": "strategy-engine-api",
   "version": "1.0.0",
-  "description": "API backend for simulating ultra-high-frequency trading, aggregating real ETH profits, and managing withdrawals.",
-  "main": "server.js",
+  "description": "API backend for monitoring liquidity pools using ethers.js with a robust FallbackProvider.",
+  "main": "strategy_engine.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node strategy_engine.js",
+    "dev": "nodemon strategy_engine.js"
   },
   "dependencies": {
+    "express": "^4.19.2",
     "cors": "^2.8.5",
-    "ethers": "^6.13.1",
-    "express": "^4.19.2"
+    "ethers": "^6.13.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
