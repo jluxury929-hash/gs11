@@ -4,7 +4,7 @@
   "description": "API backend for monitoring liquidity pools using ethers.js with a robust FallbackProvider.",
   "main": "strategy_engine.js",
   "scripts": {
-    "start": "node strategy_engine.js",
+    "start": "node ./strategy_engine.js",
     "dev": "nodemon strategy_engine.js"
   },
   "dependencies": {
