@@ -26,9 +26,9 @@ const ETHERSCAN_RPC_URL = process.env.ETHERSCAN_RPC_URL;
 
 // RPC ENDPOINTS (The secure URL is prioritized if available)
 let RPC_URLS = [
-    // Standard Public Endpoints (used as fallbacks)
+    // Optimization: Move cloudflare-eth.com to the top of the public list for better stability
+    'https://cloudflare-eth.com', 
     'https://ethereum-rpc.publicnode.com',
-    'https://cloudflare-eth.com',
     'https://eth.meowrpc.com',      
     'https://eth.llamarpc.com',
     'https://1rpc.io/eth'
